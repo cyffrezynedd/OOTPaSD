@@ -6,7 +6,8 @@ namespace Editor
         private ToolsManager toolsManager = new ToolsManager(new ToolButtonsGenerator());
         private StrokeManager strokeManager = new StrokeManager(new StrokeWidthsGenerator());
         private ColorManager colorManager = new ColorManager(new ColorButtonsGenerator());
-        private PrimitiveTemplate currentItem = default!;
+        private History history = new History(new PrimitiveCollection());
+        private PrimitiveTemplate? currentItem = default!;
         private bool isDrawing = false, isDrawingPolyline = false;
         private string primitiveName = default!;
 
@@ -14,6 +15,7 @@ namespace Editor
         {
             InitializeComponent();
             CenterToScreen();
+            KeyPreview = true;
         }
 
         private void MainFormLoad(object sender, EventArgs e)
@@ -26,9 +28,28 @@ namespace Editor
                 strokeManager.CurrentWidth,
                 tsToolPencil);
         }
+        private void MainFormKeyDown(object sender, KeyEventArgs e)
+        {
+            history.ProcessKeyDown(e);
+            pictureBox.Invalidate();
+        }
+
+        private void BtnUndoClick(object sender, EventArgs e)
+        {
+            history.Undo();
+            pictureBox.Invalidate();
+        }
+
+        private void BtnRedoClick(object sender, EventArgs e)
+        {
+            history.Redo();
+            pictureBox.Invalidate();
+        }
 
         private void PictureBoxPaint(object sender, PaintEventArgs e)
         {
+            history.Draw(e.Graphics);
+
             if (currentItem != null)
             {
                 currentItem.Draw(e.Graphics);
@@ -76,6 +97,8 @@ namespace Editor
             {
                 isDrawing = false;
                 currentItem.Update(e.Location);
+                history.Add(currentItem);
+                currentItem = null;
             }
             else if (isDrawingPolyline && currentItem is Polyline polyline)
             {
@@ -89,6 +112,7 @@ namespace Editor
             if (e.Button == MouseButtons.Left && isDrawingPolyline && currentItem is Polyline)
             {
                 isDrawingPolyline = false;
+                history.Add(currentItem);
             }
         }
     }

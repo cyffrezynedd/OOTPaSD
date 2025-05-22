@@ -123,7 +123,7 @@
             // 
             tsToolPencil.Image = Properties.Resources.pen;
             tsToolPencil.Name = "tsToolPencil";
-            tsToolPencil.Size = new Size(180, 22);
+            tsToolPencil.Size = new Size(130, 22);
             tsToolPencil.Tag = "Pencil";
             tsToolPencil.Text = "Карандаш";
             // 
@@ -131,7 +131,7 @@
             // 
             tsToolEraser.Image = Properties.Resources.eraser;
             tsToolEraser.Name = "tsToolEraser";
-            tsToolEraser.Size = new Size(180, 22);
+            tsToolEraser.Size = new Size(130, 22);
             tsToolEraser.Tag = "Eraser";
             tsToolEraser.Text = "Ластик";
             // 
@@ -139,7 +139,7 @@
             // 
             tsToolFigure.Image = Properties.Resources.figures;
             tsToolFigure.Name = "tsToolFigure";
-            tsToolFigure.Size = new Size(180, 22);
+            tsToolFigure.Size = new Size(130, 22);
             tsToolFigure.Tag = "Figures";
             tsToolFigure.Text = "Фигуры";
             // 
@@ -147,7 +147,7 @@
             // 
             tsToolLine.Image = Properties.Resources.lines;
             tsToolLine.Name = "tsToolLine";
-            tsToolLine.Size = new Size(180, 22);
+            tsToolLine.Size = new Size(130, 22);
             tsToolLine.Tag = "Lines";
             tsToolLine.Text = "Линии";
             // 
@@ -177,6 +177,7 @@
             tsBtnRedo.Margin = new Padding(2, 1, 5, 2);
             tsBtnRedo.Name = "tsBtnRedo";
             tsBtnRedo.Size = new Size(23, 22);
+            tsBtnRedo.Click += BtnRedoClick;
             // 
             // tsBtnUndo
             // 
@@ -188,6 +189,7 @@
             tsBtnUndo.Name = "tsBtnUndo";
             tsBtnUndo.RightToLeft = RightToLeft.No;
             tsBtnUndo.Size = new Size(23, 22);
+            tsBtnUndo.Click += BtnUndoClick;
             // 
             // panelColor
             // 
@@ -227,6 +229,7 @@
             ShowIcon = false;
             Text = " Editor";
             Load += MainFormLoad;
+            KeyDown += MainFormKeyDown;
             menuStrip.ResumeLayout(false);
             menuStrip.PerformLayout();
             toolStrip.ResumeLayout(false);
