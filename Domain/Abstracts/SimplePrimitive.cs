@@ -17,5 +17,8 @@
             CurrentPos = new Point(Math.Min(startPos.X, currentMousePos.X), Math.Min(startPos.Y, currentMousePos.Y));
             WidthHeight = (Math.Abs(currentMousePos.X - startPos.X), Math.Abs(currentMousePos.Y - startPos.Y)); 
         }
+
+        public override PrimitiveTemplate? Clone() => MemberwiseClone() as SimplePrimitive;
+
     }
 }

@@ -15,5 +15,7 @@
             style = selectedStyle;
             startPos = mousePos;
         }
+
+        public abstract PrimitiveTemplate? Clone();
     }
 }

@@ -18,5 +18,15 @@
         public abstract override void Draw(Graphics graphics);
 
         public abstract override void Update(Point currentMousePos);
+
+        public override PrimitiveTemplate? Clone()
+        {
+            CompositePrimitive? clone = MemberwiseClone() as CompositePrimitive;
+            if (clone != null)
+            {
+                clone.FigurePoints = new List<Point>(FigurePoints);
+            }
+            return clone;
+        }
     }
 }

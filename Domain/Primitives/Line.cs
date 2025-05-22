@@ -22,5 +22,7 @@
         {
             EndPos = currentMousePos;
         }
+
+        public override PrimitiveTemplate? Clone() => MemberwiseClone() as Line;
     }
 }

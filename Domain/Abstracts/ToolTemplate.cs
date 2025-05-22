@@ -24,33 +24,38 @@ namespace Editor
 
         public override void Update(Point currentMousePos)
         {
-            if (ToolPoints.Count > 0)
+            if (ToolPoints.Count == 0)
             {
-                Point lastPoint = ToolPoints[ToolPoints.Count - 1];
-                double distance = Distance(lastPoint, currentMousePos);
+                ToolPoints.Add(currentMousePos);
+                CurrentPos = currentMousePos;
+                return;
+            }
 
-                if (distance > 2)
+            Point lastPoint = ToolPoints[^1];
+            double distance = Distance(lastPoint, currentMousePos);
+
+            if (distance > 2)
+            {
+                int steps = Math.Max(1, (int)(distance / 2));
+                List<Point> newPoints = new List<Point>(steps);
+                double coeff;
+                int x, y;
+
+                for (int s = 1; s <= steps; s++)
                 {
-                    double coeff;
-                    int x, y;
-                    int steps = (int)(distance / 2);
-                    for (int s = 1; s <= steps; s++)
-                    {
-                        coeff = (double)s / steps;
-                        x = lastPoint.X + (int)((currentMousePos.X - lastPoint.X) * coeff);
-                        y = lastPoint.Y + (int)((currentMousePos.Y - lastPoint.Y) * coeff);
-                        ToolPoints.Add(new Point(x, y));
-                    }
+                    coeff = (double)s / steps;
+                    x = lastPoint.X + (int)((currentMousePos.X - lastPoint.X) * coeff);
+                    y = lastPoint.Y + (int)((currentMousePos.Y - lastPoint.Y) * coeff);
+                    newPoints.Add(new Point(x, y));
                 }
-                else
-                {
-                    ToolPoints.Add(currentMousePos);
-                }
+
+                ToolPoints.AddRange(newPoints);
             }
             else
             {
                 ToolPoints.Add(currentMousePos);
             }
+
             CurrentPos = currentMousePos;
         }
 
@@ -60,51 +65,29 @@ namespace Editor
             if (graphics == null)
                 throw new ArgumentNullException(nameof(graphics));
 
-            if (ToolPoints.Count == 0)
+            if (ToolPoints.Count < 2)
                 return;
 
             graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            int diameter = style.StrokeWidth;
+            int diameter = Math.Max(1, style.StrokeWidth);
 
-            if (diameter < 1)
+            using (GraphicsPath path = new GraphicsPath())
+            using (SolidBrush brush = new SolidBrush(style.StrokeColor))
             {
-                diameter = 1;
-            }
+                path.AddLines(ToolPoints.ToArray());
 
-            using (var pen = new Pen(style.StrokeColor, diameter))
-            using (var brush = new SolidBrush(style.StrokeColor))
+                graphics.DrawPath(new Pen(brush, diameter), path);
+            }
+        }
+
+        public override PrimitiveTemplate? Clone()
+        {
+            ToolTemplate? clone = MemberwiseClone() as ToolTemplate;
+            if (clone != null)
             {
-                foreach (var point in ToolPoints)
-                {
-                    var r = new System.Drawing.Rectangle(point.X - diameter / 2, point.Y - diameter / 2, diameter, diameter);
-                    graphics.FillEllipse(brush, r);
-                }
-
-                Point prevPoint;
-                Point currentPoint;
-                double distance, coeff;
-                int numSteps, x, y;
-
-                for (int i = 1; i < ToolPoints.Count; i++)
-                {
-                    prevPoint = ToolPoints[i - 1];
-                    currentPoint = ToolPoints[i];
-                    distance = Distance(prevPoint, currentPoint);
-
-                    if (distance > diameter * 0.5f)
-                    {
-                        numSteps = (int)(distance / (diameter * 0.5f));
-                        for (int s = 1; s < numSteps; s++)
-                        {
-                            coeff = (double)s / numSteps;
-                            x = prevPoint.X + (int)((currentPoint.X - prevPoint.X) * coeff);
-                            y = prevPoint.Y + (int)((currentPoint.Y - prevPoint.Y) * coeff);
-                            var r = new System.Drawing.Rectangle(x - diameter / 2, y - diameter / 2, diameter, diameter);
-                            graphics.FillEllipse(brush, r);
-                        }
-                    }
-                }
+                clone.ToolPoints = new List<Point>(ToolPoints);
             }
+            return clone;
         }
     }
 }
