@@ -31,12 +31,14 @@ namespace Editor
 
                 if (distance > 2)
                 {
+                    double coeff;
+                    int x, y;
                     int steps = (int)(distance / 2);
-                    for (int i = 1; i <= steps; i++)
+                    for (int s = 1; s <= steps; s++)
                     {
-                        double t = (double)i / steps;
-                        int x = lastPoint.X + (int)((currentMousePos.X - lastPoint.X) * t);
-                        int y = lastPoint.Y + (int)((currentMousePos.Y - lastPoint.Y) * t);
+                        coeff = (double)s / steps;
+                        x = lastPoint.X + (int)((currentMousePos.X - lastPoint.X) * coeff);
+                        y = lastPoint.Y + (int)((currentMousePos.Y - lastPoint.Y) * coeff);
                         ToolPoints.Add(new Point(x, y));
                     }
                 }
@@ -51,6 +53,7 @@ namespace Editor
             }
             CurrentPos = currentMousePos;
         }
+
 
         public override void Draw(Graphics graphics)
         {
@@ -68,7 +71,8 @@ namespace Editor
                 diameter = 1;
             }
 
-            using (SolidBrush brush = new SolidBrush(style.StrokeColor))
+            using (var pen = new Pen(style.StrokeColor, diameter))
+            using (var brush = new SolidBrush(style.StrokeColor))
             {
                 foreach (var point in ToolPoints)
                 {

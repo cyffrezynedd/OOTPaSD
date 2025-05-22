@@ -36,7 +36,7 @@
             tsPlugin = new ToolStripMenuItem();
             toolStrip = new ToolStrip();
             tsTool = new ToolStripSplitButton();
-            tsToolPensil = new ToolStripMenuItem();
+            tsToolPencil = new ToolStripMenuItem();
             tsToolEraser = new ToolStripMenuItem();
             tsToolFigure = new ToolStripMenuItem();
             tsToolLine = new ToolStripMenuItem();
@@ -111,7 +111,7 @@
             // 
             // tsTool
             // 
-            tsTool.DropDownItems.AddRange(new ToolStripItem[] { tsToolPensil, tsToolEraser, tsToolFigure, tsToolLine });
+            tsTool.DropDownItems.AddRange(new ToolStripItem[] { tsToolPencil, tsToolEraser, tsToolFigure, tsToolLine });
             tsTool.ImageTransparentColor = Color.Magenta;
             tsTool.Name = "tsTool";
             tsTool.Size = new Size(96, 22);
@@ -119,19 +119,19 @@
             tsTool.TextImageRelation = TextImageRelation.TextBeforeImage;
             tsTool.ToolTipText = "Инструмент";
             // 
-            // tsToolPensil
+            // tsToolPencil
             // 
-            tsToolPensil.Image = Properties.Resources.pen;
-            tsToolPensil.Name = "tsToolPensil";
-            tsToolPensil.Size = new Size(130, 22);
-            tsToolPensil.Tag = "Pensil";
-            tsToolPensil.Text = "Карандаш";
+            tsToolPencil.Image = Properties.Resources.pen;
+            tsToolPencil.Name = "tsToolPencil";
+            tsToolPencil.Size = new Size(180, 22);
+            tsToolPencil.Tag = "Pencil";
+            tsToolPencil.Text = "Карандаш";
             // 
             // tsToolEraser
             // 
             tsToolEraser.Image = Properties.Resources.eraser;
             tsToolEraser.Name = "tsToolEraser";
-            tsToolEraser.Size = new Size(130, 22);
+            tsToolEraser.Size = new Size(180, 22);
             tsToolEraser.Tag = "Eraser";
             tsToolEraser.Text = "Ластик";
             // 
@@ -139,7 +139,7 @@
             // 
             tsToolFigure.Image = Properties.Resources.figures;
             tsToolFigure.Name = "tsToolFigure";
-            tsToolFigure.Size = new Size(130, 22);
+            tsToolFigure.Size = new Size(180, 22);
             tsToolFigure.Tag = "Figures";
             tsToolFigure.Text = "Фигуры";
             // 
@@ -147,7 +147,7 @@
             // 
             tsToolLine.Image = Properties.Resources.lines;
             tsToolLine.Name = "tsToolLine";
-            tsToolLine.Size = new Size(130, 22);
+            tsToolLine.Size = new Size(180, 22);
             tsToolLine.Tag = "Lines";
             tsToolLine.Text = "Линии";
             // 
@@ -245,7 +245,7 @@
         private ToolStripMenuItem tsCanvas;
         private ToolStripMenuItem tsClear;
         private ToolStripSplitButton tsTool;
-        private ToolStripMenuItem tsToolPensil;
+        private ToolStripMenuItem tsToolPencil;
         private ToolStripMenuItem tsToolFigure;
         private ToolStripMenuItem tsToolLine;
         private ToolStripDropDownButton tsStrokeValue;

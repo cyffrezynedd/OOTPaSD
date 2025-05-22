@@ -8,6 +8,7 @@ namespace Editor
         private ColorManager colorManager = new ColorManager(new ColorButtonsGenerator());
         private PrimitiveTemplate currentItem = default!;
         private bool isDrawing = false, isDrawingPolyline = false;
+        private string primitiveName = default!;
 
         public MainForm()
         {
@@ -18,12 +19,12 @@ namespace Editor
         private void MainFormLoad(object sender, EventArgs e)
         {
             colorManager.Initialize(panelColor);
-            toolsManager.Initialize(toolStrip, tsToolPensil);
+            toolsManager.Initialize(toolStrip, tsToolPencil);
             strokeManager.Initialize(tsStrokeValue, DEFAULT_WIDTH);
             ParametersManager.SetCurrentParameters(
                 colorManager.CurrentColors,
                 strokeManager.CurrentWidth,
-                tsToolPensil);
+                tsToolPencil);
         }
 
         private void PictureBoxPaint(object sender, PaintEventArgs e)
@@ -36,21 +37,21 @@ namespace Editor
 
         private void PictureBoxMouseDown(object sender, MouseEventArgs e)
         {
-            var (selectedItem, style) = ParametersManager.GetInformation();
+            primitiveName = ParametersManager.CollectInformation(e.Location);
             if (!isDrawing && !isDrawingPolyline)
             {
-                currentItem = PrimitiveFactory.CreateInstance(selectedItem, style, e.Location);
+                currentItem = PrimitiveFactory.CreateInstance(primitiveName);
             }
 
-            if (!selectedItem.Equals("Polyline"))
+            if (!primitiveName.Equals("Polyline"))
             {
                 isDrawing = true;
-                pictureBox.Invalidate();
             }
             else
             {
                 isDrawingPolyline = true;
             }
+            pictureBox.Invalidate();
         }
 
 
@@ -60,6 +61,12 @@ namespace Editor
             {
                 currentItem.Update(e.Location);
             }
+
+            if (isDrawingPolyline && currentItem is Polyline polyline)
+            {
+                polyline.UpdatePreview(e.Location);
+            }
+
             pictureBox.Invalidate();
         }
 

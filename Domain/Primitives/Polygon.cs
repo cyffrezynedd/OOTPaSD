@@ -23,8 +23,8 @@
 
         public override void Update(Point currentMousePos)
         {
-            WidthHeight = (Math.Abs(currentMousePos.X - startPos.X) * 2,
-                Math.Abs(currentMousePos.Y - startPos.Y) * 2);
+            WidthHeight = (Math.Abs(currentMousePos.X - startPos.X),
+                Math.Abs(currentMousePos.Y - startPos.Y));
 
             FigurePoints = this.PointsRelocate(currentMousePos);
         }
@@ -38,11 +38,15 @@
             var result = new List<Point>(p.angleCount);
             double angleStep = 2 * Math.PI / p.angleCount;
 
+            int centerX = (int)(Math.Min(p.startPos.X, currentMousePos.X) + p.WidthHeight.Item1 / 2);
+            int centerY = (int)(Math.Min(p.startPos.Y, currentMousePos.Y) + p.WidthHeight.Item2 / 2);
+            double angle;
+            int x, y;
             for (int i = 0; i < p.angleCount; i++)
             {
-                double angle = initialAngle + i * angleStep;
-                int x = p.startPos.X + (int)(Math.Cos(angle) * p.WidthHeight.Item1 / 2);
-                int y = p.startPos.Y + (int)(Math.Sin(angle) * p.WidthHeight.Item2 / 2);
+                angle = initialAngle + i * angleStep;
+                x = centerX + (int)(Math.Cos(angle) * p.WidthHeight.Item1 / 2);
+                y = centerY + (int)(Math.Sin(angle) * p.WidthHeight.Item2 / 2);
                 result.Add(new Point(x, y));
             }
 
