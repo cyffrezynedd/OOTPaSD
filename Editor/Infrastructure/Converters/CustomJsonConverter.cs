@@ -7,20 +7,27 @@ namespace Editor
     public class CustomizedConverter<T> : JsonConverter<T>
         where T : PrimitiveTemplate
     {
-        private readonly Func<JsonReader, JsonSerializer, T> funcRead;
+        private readonly Func<JsonReader, JsonSerializer, T?> funcRead;
         private readonly Action<JsonWriter, T, JsonSerializer> funcWrite;
 
         public CustomizedConverter(
-            Func<JsonReader, JsonSerializer, T> newFuncRead,
+            Func<JsonReader, JsonSerializer, T?> newFuncRead,
             Action<JsonWriter, T, JsonSerializer> newFuncWrite)
         {
             funcRead = newFuncRead;
             funcWrite = newFuncWrite;
         }
 
-        public override T ReadJson(JsonReader reader, Type objectType, T? value, bool hasExistingValue, JsonSerializer serializer)
+        public override T? ReadJson(JsonReader reader, Type objectType, T? value, bool hasExistingValue, JsonSerializer serializer)
         {
-            return funcRead(reader, serializer);
+            try
+            {
+                return funcRead(reader, serializer);
+            }
+            catch  (JsonException ex)
+            {
+                throw new JsonException($"Error while deserializing: {ex.Message}");
+            }
         }
 
         public override void WriteJson(JsonWriter writer, T? value, JsonSerializer serializer)
@@ -48,15 +55,30 @@ namespace Editor
                 (JsonReader reader, JsonSerializer serializer) =>
                 {
                     JObject jo = JObject.Load(reader);
+
+                    if (jo["ObjectType"] == null || jo["ObjectInstance"] == null)
+                        throw new JsonException("Not enough data to load");
+
                     string? typeName = jo["ObjectType"]?.ToString();
-                    if (typeName is null)
-                        throw new JsonException("No such field 'ObjectType' in JSON object");
+                    if (string.IsNullOrWhiteSpace(typeName))
+                        throw new JsonException("Field ObjectType is invalid");
 
                     Type? objectType = AppDomain.CurrentDomain.GetAssemblies()
-                        .SelectMany(asm => asm.GetTypes())
-                        .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.Ordinal));
-                    if (objectType is null)
-                        throw new ArgumentNullException($"No such type {typeName} in current domain");
+                        .SelectMany(asm =>
+                        {
+                            try
+                            {
+                                return asm.GetTypes();
+                            }
+                            catch (ReflectionTypeLoadException rex)
+                            {
+                                return rex.Types.Where(t => t != null)!;
+                            }
+                        })
+                        .FirstOrDefault(t => t?.Name.Equals(typeName, StringComparison.Ordinal) == true);
+
+                    if (objectType == null)
+                        throw new JsonException($"Type {typeName} is not found in current domain");
 
                     var tempSerializer = new JsonSerializer
                     {
@@ -65,8 +87,8 @@ namespace Editor
                     };
 
                     PrimitiveTemplate? objectInstance = jo["ObjectInstance"]?.ToObject(objectType, tempSerializer) as PrimitiveTemplate;
-                    if (objectInstance is null)
-                        throw new ArgumentNullException($"Can not create an instance of such type {typeName}");
+                    if (objectInstance == null)
+                        throw new JsonException($"Not enough data to create instance of type {typeName}");
 
                     return objectInstance;
                 },

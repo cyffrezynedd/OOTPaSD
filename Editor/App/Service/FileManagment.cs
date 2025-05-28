@@ -1,4 +1,6 @@
-﻿namespace Editor
+﻿using Newtonsoft.Json;
+
+namespace Editor
 {
     public class FileManagment
     {
@@ -18,6 +20,10 @@
                         {
                             history.Add(primitive);
                         }
+                    }
+                    catch (JsonException ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
                     }
                     catch (Exception ex)
                     {

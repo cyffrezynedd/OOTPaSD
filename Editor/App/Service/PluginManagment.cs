@@ -17,6 +17,7 @@
                         foreach (var pair in PluginHelper.MenuItems)
                         {
                             toolsManager.FigureMenuItems.TryAdd(pair.Key, pair.Value);
+                            toolsManager.TryAddToFigureMenu(pair.Value);
                         }
                     }
                     catch (Exception ex)

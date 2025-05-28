@@ -17,17 +17,10 @@ namespace Editor
                 return;
             }
 
-            var types = pluginAssembly.GetTypes()
-            .Where((Type t) => !t.IsAbstract && typeof(PrimitiveTemplate).IsAssignableFrom(t));
-            
-            foreach(Type t in types)
-            {
-                PrimitiveFactory.UpdateFactory(t);
-                PluginHelper.AddMenuItem(t.Name);
-            }
-            
-            string[] resourceNames = pluginAssembly.GetManifestResourceNames();
+            var type = pluginAssembly.GetTypes()
+                .Where((Type t) => !t.IsAbstract && typeof(PrimitiveTemplate).IsAssignableFrom(t)).First();
 
+            string[] resourceNames = pluginAssembly.GetManifestResourceNames();
             string? imageResourceName = resourceNames
                 .FirstOrDefault(rn => rn.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
 
@@ -38,10 +31,13 @@ namespace Editor
                     if (stream != null)
                     {
                         Image image = Image.FromStream(stream);
-                        PluginHelper.AddImage(imageResourceName, image);
+                        PluginHelper.AddImage(type.Name, image);
                     }
                 }
             }
+
+            PrimitiveFactory.UpdateFactory(type);
+            PluginHelper.AddMenuItem(type.Name);
         }
     }
 
@@ -70,7 +66,13 @@ namespace Editor
 
         public static bool TryLoad(AssemblyName pluginAssemblyName)
         {
+            if (pluginAssemblyName == null || pluginAssemblyName.Name == null)
+            {
+                return false;
+            }
+
             return LoadedPlugins.TryAdd(pluginAssemblyName.Name, pluginAssemblyName);
         }
+
     }
 }
