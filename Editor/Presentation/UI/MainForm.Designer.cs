@@ -70,16 +70,18 @@
             // tsFileOpen
             // 
             tsFileOpen.Name = "tsFileOpen";
-            tsFileOpen.ShortcutKeys = Keys.Control | Keys.S;
-            tsFileOpen.Size = new Size(176, 22);
+            tsFileOpen.ShortcutKeys = Keys.Control | Keys.O;
+            tsFileOpen.Size = new Size(180, 22);
             tsFileOpen.Text = "Открыть";
+            tsFileOpen.Click += FileOpenClick;
             // 
             // tsFileSave
             // 
             tsFileSave.Name = "tsFileSave";
-            tsFileSave.ShortcutKeys = Keys.Control | Keys.O;
-            tsFileSave.Size = new Size(176, 22);
+            tsFileSave.ShortcutKeys = Keys.Control | Keys.S;
+            tsFileSave.Size = new Size(180, 22);
             tsFileSave.Text = "Сохранить";
+            tsFileSave.Click += FileSaveClick;
             // 
             // tsCanvas
             // 

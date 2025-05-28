@@ -52,10 +52,11 @@ namespace Editor
                     if (typeName is null)
                         throw new JsonException("No such field 'ObjectType' in JSON object");
 
-                    Type? objectType = Assembly.GetExecutingAssembly().GetTypes()
+                    Type? objectType = AppDomain.CurrentDomain.GetAssemblies()
+                        .SelectMany(asm => asm.GetTypes())
                         .FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.Ordinal));
                     if (objectType is null)
-                        throw new ArgumentNullException($"No such type {typeName} in current assemly");
+                        throw new ArgumentNullException($"No such type {typeName} in current domain");
 
                     var tempSerializer = new JsonSerializer
                     {

@@ -3,11 +3,12 @@ namespace Editor
     public partial class MainForm : Form
     {
         private const int DEFAULT_WIDTH = 1;
+        private FileManagment fileManagment = new FileManagment();
         private ToolsManager toolsManager = new ToolsManager(new ToolButtonsGenerator());
         private StrokeManager strokeManager = new StrokeManager(new StrokeWidthsGenerator());
         private ColorManager colorManager = new ColorManager(new ColorButtonsGenerator());
         private History history = new History(new PrimitiveCollection());
-        private PrimitiveTemplate? currentItem = default!;
+        private PrimitiveTemplate? currentItem;
         private bool isDrawing = false, isDrawingPolyline = false;
         private string primitiveName = default!;
 
@@ -27,7 +28,9 @@ namespace Editor
                 colorManager.CurrentColors,
                 strokeManager.CurrentWidth,
                 tsToolPencil);
+            history.Initialize(pictureBox.Width, pictureBox.Height);
         }
+
         private void MainFormKeyDown(object sender, KeyEventArgs e)
         {
             history.ProcessKeyDown(e);
@@ -64,7 +67,7 @@ namespace Editor
                 currentItem = PrimitiveFactory.CreateInstance(primitiveName);
             }
 
-            if (!primitiveName.Equals("Polyline"))
+            if (currentItem is not Polyline)
             {
                 isDrawing = true;
             }
@@ -72,23 +75,25 @@ namespace Editor
             {
                 isDrawingPolyline = true;
             }
-            pictureBox.Invalidate();
         }
-
 
         private void PictureBoxMouseMove(object sender, MouseEventArgs e)
         {
-            if (isDrawing && currentItem != null)
+            if (currentItem != null)
             {
-                currentItem.Update(e.Location);
+                if (isDrawing)
+                {
+                    currentItem.Update(e.Location);
+                }
+
+                if (isDrawingPolyline && currentItem is Polyline polyline)
+                {
+                    polyline.UpdatePreview(e.Location);
+                }
+
+                pictureBox.Invalidate();
             }
 
-            if (isDrawingPolyline && currentItem is Polyline polyline)
-            {
-                polyline.UpdatePreview(e.Location);
-            }
-
-            pictureBox.Invalidate();
         }
 
         private void PictureBoxMouseUp(object sender, MouseEventArgs e)
@@ -114,6 +119,17 @@ namespace Editor
                 isDrawingPolyline = false;
                 history.Add(currentItem);
             }
+        }
+
+        private void FileOpenClick(object sender, EventArgs e)
+        {
+            fileManagment.OpenFile(history);
+            pictureBox.Invalidate();
+        }
+
+        private void FileSaveClick(object sender, EventArgs e)
+        {
+            fileManagment.SaveFile(history);
         }
     }
 }
