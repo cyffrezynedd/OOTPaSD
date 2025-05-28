@@ -1,12 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
+using System.Security.Policy;
 
 namespace Editor
-{    
-    internal class PrimitivePlugin
+{
+    public static class PrimitivePlugin
     {
+        public static void LoadPrimitivePlugin(string filepath)
+        {
+            Assembly pluginAssembly = Assembly.LoadFrom(filepath);
+            AssemblyName pluginAssemblyName = pluginAssembly.GetName() ??
+                throw new ArgumentNullException($"{nameof(pluginAssembly)} does not have name");
+
+            if (!PluginHelper.TryLoad(pluginAssemblyName))
+            {
+                MessageBox.Show("This plugin is already loaded", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var types = pluginAssembly.GetTypes()
+            .Where((Type t) => !t.IsAbstract && typeof(PrimitiveTemplate).IsAssignableFrom(t));
+            
+            foreach(Type t in types)
+            {
+                PrimitiveFactory.UpdateFactory(t);
+                PluginHelper.AddMenuItem(t.Name);
+            }
+            
+            string[] resourceNames = pluginAssembly.GetManifestResourceNames();
+
+            string? imageResourceName = resourceNames
+                .FirstOrDefault(rn => rn.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+
+            if (imageResourceName != null)
+            {
+                using (Stream? stream = pluginAssembly.GetManifestResourceStream(imageResourceName))
+                {
+                    if (stream != null)
+                    {
+                        Image image = Image.FromStream(stream);
+                        PluginHelper.AddImage(imageResourceName, image);
+                    }
+                }
+            }
+        }
+    }
+
+    public static class PluginHelper
+    {
+        public static Dictionary<string, Image> Images { get; } = new Dictionary<string, Image>();
+
+        public static Dictionary<string, ToolStripMenuItem> MenuItems { get; } = new Dictionary<string, ToolStripMenuItem>();
+
+        public static Dictionary<string, AssemblyName> LoadedPlugins { get; } = new Dictionary<string, AssemblyName>();
+
+        public static void AddImage(string key, Image image)
+        {
+            Images[key] = image;
+        }
+
+        public static void AddMenuItem(string name)
+        {
+            MenuItems.Add(name, new ToolStripMenuItem
+            {
+                Tag = name,
+                Text = name,
+                Image = Images.ContainsKey(name) ? Images[name] : Properties.Resources.figures
+            });
+        }
+
+        public static bool TryLoad(AssemblyName pluginAssemblyName)
+        {
+            return LoadedPlugins.TryAdd(pluginAssemblyName.Name, pluginAssemblyName);
+        }
     }
 }

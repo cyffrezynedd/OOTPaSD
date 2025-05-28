@@ -24,7 +24,7 @@
         public override void Update(Point currentMousePos)
         {
             WidthHeight = (Math.Abs(currentMousePos.X - startPos.X),
-                Math.Abs(currentMousePos.Y - startPos.Y));
+                           Math.Abs(currentMousePos.Y - startPos.Y));
 
             FigurePoints = this.PointsRelocate(currentMousePos);
         }

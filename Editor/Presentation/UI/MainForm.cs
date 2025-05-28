@@ -3,6 +3,7 @@ namespace Editor
     public partial class MainForm : Form
     {
         private const int DEFAULT_WIDTH = 1;
+        private PluginManagment pluginManagment = new PluginManagment();
         private FileManagment fileManagment = new FileManagment();
         private ToolsManager toolsManager = new ToolsManager(new ToolButtonsGenerator());
         private StrokeManager strokeManager = new StrokeManager(new StrokeWidthsGenerator());
@@ -33,18 +34,21 @@ namespace Editor
 
         private void MainFormKeyDown(object sender, KeyEventArgs e)
         {
+            if (isDrawing || isDrawingPolyline) return;
             history.ProcessKeyDown(e);
             pictureBox.Invalidate();
         }
 
         private void BtnUndoClick(object sender, EventArgs e)
         {
+            if (isDrawing || isDrawingPolyline) return;
             history.Undo();
             pictureBox.Invalidate();
         }
 
         private void BtnRedoClick(object sender, EventArgs e)
         {
+
             history.Redo();
             pictureBox.Invalidate();
         }
@@ -118,6 +122,7 @@ namespace Editor
             {
                 isDrawingPolyline = false;
                 history.Add(currentItem);
+                currentItem = null;
             }
         }
 
@@ -130,6 +135,11 @@ namespace Editor
         private void FileSaveClick(object sender, EventArgs e)
         {
             fileManagment.SaveFile(history);
+        }
+
+        private void PluginAddClick(object sender, EventArgs e)
+        {
+            pluginManagment.OpenPlugin(toolsManager);
         }
     }
 }

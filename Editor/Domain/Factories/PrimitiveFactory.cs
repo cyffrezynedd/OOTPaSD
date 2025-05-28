@@ -28,8 +28,9 @@ namespace Editor
 
                 string key = type.Name;
                 constructors[key] = target;
-                parametersResolver = GetResolver();
             }
+
+            parametersResolver = GetResolver();
         }
 
         public static PrimitiveTemplate CreateInstance(string typeName)
@@ -52,6 +53,24 @@ namespace Editor
                 throw new InvalidOperationException("Error while creating instance", ex);
             }
         }
+
+        public static void UpdateFactory(Type type)
+        {
+            if (constructors.ContainsKey(type.Name))
+                return;
+
+            var c = type.GetConstructors();
+            ConstructorInfo target = c.FirstOrDefault(constructor =>
+            {
+                ParameterInfo[] parameters = constructor.GetParameters();
+                return parameters.Length >= 2 &&
+                       parameters[0].ParameterType == typeof(PrimitiveStyle) &&
+                       parameters[1].ParameterType == typeof(Point);
+            }) ?? c.OrderBy(constructor => constructor.GetParameters().Length).First();
+
+            string key = type.Name;
+            constructors[key] = target;
+        } 
 
         private static object? GetValueByType<T>(this T instance, Type targetType) where T : struct
         {

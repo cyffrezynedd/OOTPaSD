@@ -34,6 +34,7 @@
             tsCanvas = new ToolStripMenuItem();
             tsClear = new ToolStripMenuItem();
             tsPlugin = new ToolStripMenuItem();
+            tsPluginAdd = new ToolStripMenuItem();
             toolStrip = new ToolStrip();
             tsTool = new ToolStripSplitButton();
             tsToolPencil = new ToolStripMenuItem();
@@ -71,7 +72,7 @@
             // 
             tsFileOpen.Name = "tsFileOpen";
             tsFileOpen.ShortcutKeys = Keys.Control | Keys.O;
-            tsFileOpen.Size = new Size(180, 22);
+            tsFileOpen.Size = new Size(173, 22);
             tsFileOpen.Text = "Открыть";
             tsFileOpen.Click += FileOpenClick;
             // 
@@ -79,7 +80,7 @@
             // 
             tsFileSave.Name = "tsFileSave";
             tsFileSave.ShortcutKeys = Keys.Control | Keys.S;
-            tsFileSave.Size = new Size(180, 22);
+            tsFileSave.Size = new Size(173, 22);
             tsFileSave.Text = "Сохранить";
             tsFileSave.Click += FileSaveClick;
             // 
@@ -99,9 +100,18 @@
             // 
             // tsPlugin
             // 
+            tsPlugin.DropDownItems.AddRange(new ToolStripItem[] { tsPluginAdd });
             tsPlugin.Name = "tsPlugin";
             tsPlugin.Size = new Size(69, 20);
             tsPlugin.Text = "Плагины";
+            // 
+            // tsPluginAdd
+            // 
+            tsPluginAdd.Name = "tsPluginAdd";
+            tsPluginAdd.ShortcutKeys = Keys.Control | Keys.Alt | Keys.O;
+            tsPluginAdd.Size = new Size(192, 22);
+            tsPluginAdd.Text = "Добавить";
+            tsPluginAdd.Click += PluginAddClick;
             // 
             // toolStrip
             // 
@@ -262,5 +272,6 @@
         private ToolStripMenuItem tsToolEraser;
         private ToolStripButton tsBtnRedo;
         private ToolStripButton tsBtnUndo;
+        private ToolStripMenuItem tsPluginAdd;
     }
 }

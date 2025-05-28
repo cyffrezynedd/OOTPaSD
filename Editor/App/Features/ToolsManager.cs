@@ -6,8 +6,8 @@
         public ToolStripMenuItem? CurrentItem { get; private set; }
         public Dictionary<string, ToolStripMenuItem>? CurrentMenu { get; private set; }
 
-        private readonly Dictionary<string, ToolStripMenuItem> figureMenuItems;
-        private readonly Dictionary<string, ToolStripMenuItem> lineMenuItems;
+        public Dictionary<string, ToolStripMenuItem> FigureMenuItems { get; }
+        public Dictionary<string, ToolStripMenuItem> LineMenuItems { get; }
 
         private readonly ToolButtonsGenerator generator;
         private readonly PolygonAnglesGenerator angleGenerator;
@@ -21,14 +21,14 @@
             angleGenerator = new PolygonAnglesGenerator();
             angleManager = new AngleManager(angleGenerator);
 
-            figureMenuItems = new Dictionary<string, ToolStripMenuItem>
+            FigureMenuItems = new Dictionary<string, ToolStripMenuItem>
             {
                 { "Rectangle", new ToolStripMenuItem { Tag = "Rectangle", Text = "Прямоугольник", Image = Properties.Resources.rectangle } },
                 { "Ellipse", new ToolStripMenuItem { Tag = "Ellipse", Text = "Эллипс", Image = Properties.Resources.ellipse } },
                 { "Polygon", new ToolStripMenuItem { Tag = "Polygon", Text = "Многоугольник", Image = Properties.Resources.polygon } }
             };
 
-            lineMenuItems = new Dictionary<string, ToolStripMenuItem>
+            LineMenuItems = new Dictionary<string, ToolStripMenuItem>
             {
                 { "Line", new ToolStripMenuItem { Tag = "Line", Text = "Прямая", Image = Properties.Resources.direct } },
                 { "Polyline", new ToolStripMenuItem { Tag = "Polyline", Text = "Ломаная", Image = Properties.Resources.polyline } }
@@ -86,13 +86,13 @@
             {
                 if (tag.Equals("Figures"))
                 {
-                    CurrentMenu = figureMenuItems;
-                    CurrentItem = figureMenuItems["Rectangle"];
+                    CurrentMenu = FigureMenuItems;
+                    CurrentItem = FigureMenuItems["Rectangle"];
                 }
                 else if (tag.Equals("Lines"))
                 {
-                    CurrentMenu = lineMenuItems;
-                    CurrentItem = lineMenuItems["Line"];
+                    CurrentMenu = LineMenuItems;
+                    CurrentItem = LineMenuItems["Line"];
                 }
                 else
                 {

@@ -6,15 +6,22 @@
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*";
+                openFileDialog.Filter = "JSON Files (*.json)|*.json";
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    string filePath = openFileDialog.FileName;
-                    var result = Deserialization.LoadFromFile(filePath);
-                    history.Clear();
-                    foreach (var primitive in result)
+                    try
                     {
-                        history.Add(primitive);
+                        string filePath = openFileDialog.FileName;
+                        var result = Deserialization.LoadFromFile(filePath);
+                        history.Clear();
+                        foreach (var primitive in result)
+                        {
+                            history.Add(primitive);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error while opening file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -24,11 +31,18 @@
         {
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
-                saveFileDialog.Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*";
+                saveFileDialog.Filter = "JSON Files (*.json)|*.json";
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    string filePath = saveFileDialog.FileName;
-                    Serialization.SaveToFile(history.GetCollection(), filePath);
+                    try
+                    {
+                        string filePath = saveFileDialog.FileName;
+                        Serialization.SaveToFile(history.GetCollection(), filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error while saving file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
