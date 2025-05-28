@@ -102,6 +102,18 @@
 
                 generator.RemoveFigureMenu(ts, CurrentItem, FigureMenu);
                 FigureMenu = generator.CreateFigureMenu(ts, CurrentMenu, FigureMenuItemClick);
+
+                if (CurrentItem.Tag is string t && t.Equals("Polygon"))
+                {
+                    angleGenerator.RemovePolygonAnglesMenu(toolStrip);
+                    angleManager.Initialize(toolStrip, 5);
+                    ParametersManager.SetAngle(5);
+                }
+                else
+                {
+                    angleGenerator.RemovePolygonAnglesMenu(toolStrip);
+                    ParametersManager.SetAngle(-1);
+                }
             }
         }
 
