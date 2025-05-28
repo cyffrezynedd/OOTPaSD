@@ -11,7 +11,7 @@
         List<PrimitiveTemplate> IAccessor.Primitives => primitives;
     }
 
-    public static class PrimitiveCollectionExtensions
+    public static class PrimitiveCollectionMethods
     {
         public static void Add(this PrimitiveCollection collection, PrimitiveTemplate primitive)
         {
