@@ -8,11 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Editor\Editor.csproj" />
+    <None Remove="Resources\trapezoid.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\" />
+    <EmbeddedResource Include="Resources\trapezoid.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Editor\Editor.csproj" />
   </ItemGroup>
 
 </Project>
