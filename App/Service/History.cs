@@ -5,29 +5,39 @@
         private PrimitiveCollection collection;
         private Stack<PrimitiveTemplate> undo;
         private Stack<PrimitiveTemplate> redo;
-
+        private Bitmap savedImage = default!;
 
         public History(PrimitiveCollection newCollection)
         {
             collection = newCollection;
-            undo = new Stack<PrimitiveTemplate>();
+            undo= new Stack<PrimitiveTemplate>();
             redo = new Stack<PrimitiveTemplate>();
+        }
+
+        public void Initialize(int width, int height)
+        {
+            savedImage = new Bitmap(width, height);
+            using (Graphics g = Graphics.FromImage(savedImage))
+            {
+                g.Clear(SystemColors.Control);
+            }
         }
 
         public void Add(PrimitiveTemplate primitive)
         {
             collection.Add(primitive);
+
             undo.Push(collection.GetLast());
-            
-            if (redo.Count > 0)
+            redo.Clear();
+            using (Graphics g = Graphics.FromImage(savedImage))
             {
-                redo.Clear();
+                primitive.Draw(g);
             }
         }
 
         public void Draw(Graphics graphics)
         {
-            collection.Draw(graphics);
+            graphics.DrawImage(savedImage, 0, 0);
         }
 
         public void Undo()
@@ -37,8 +47,14 @@
                 return;
             }
 
-            redo.Push(undo.Pop());
+            var primitive = undo.Pop();
+            redo.Push(primitive);
             collection.RemoveLast();
+            using (Graphics g = Graphics.FromImage(savedImage))
+            {
+                g.Clear(SystemColors.Control);
+                collection.Draw(g);
+            }
         }
 
         public void Redo()
@@ -51,6 +67,10 @@
             var primitive = redo.Pop();
             undo.Push(primitive);
             collection.Add(primitive);
+            using (Graphics g = Graphics.FromImage(savedImage))
+            {
+                primitive.Draw(g);
+            }
         }
 
         public void Clear()
@@ -58,6 +78,11 @@
             undo.Clear();
             redo.Clear();
             collection.Clear();
+
+            using (Graphics g = Graphics.FromImage(savedImage))
+            {
+                g.Clear(SystemColors.Control);
+            }
         }
 
         public void ProcessKeyDown(KeyEventArgs e)
@@ -73,5 +98,7 @@
                 e.Handled = true;
             }
         }
+
+        public PrimitiveCollection GetCollection() => collection;
     }
 }
