@@ -4,6 +4,9 @@ namespace Editor
 {
     public abstract class ToolTemplate : PrimitiveTemplate
     {
+        private Bitmap? buffer;
+        private int bufferedPoints;
+
         public readonly int Radius;
         public List<Point> ToolPoints { get; private set; }
         public Point CurrentPos { get; private set; }
@@ -13,7 +16,7 @@ namespace Editor
         {
             CurrentPos = startPos;
             Radius = Convert.ToInt32(style.StrokeWidth);
-            ToolPoints = new List<Point> { startPos };
+            ToolPoints = new List<Point>(1) { startPos };
         }
         private double Distance(Point a, Point b)
         {
@@ -59,25 +62,39 @@ namespace Editor
             CurrentPos = currentMousePos;
         }
 
-
         public override void Draw(Graphics graphics)
         {
             if (graphics == null)
                 throw new ArgumentNullException(nameof(graphics));
 
-            if (ToolPoints.Count < 2)
-                return;
-
             graphics.SmoothingMode = SmoothingMode.AntiAlias;
             int diameter = Math.Max(1, style.StrokeWidth);
 
-            using (GraphicsPath path = new GraphicsPath())
-            using (SolidBrush brush = new SolidBrush(style.StrokeColor))
+            if (buffer == null)
             {
-                path.AddLines(ToolPoints.ToArray());
-
-                graphics.DrawPath(new Pen(brush, diameter), path);
+                var bounds = graphics.VisibleClipBounds;
+                buffer = new Bitmap((int)bounds.Width, (int)bounds.Height);
+                bufferedPoints = 0;
             }
+
+            if (bufferedPoints < ToolPoints.Count)
+            {
+                using (Graphics savedImage = Graphics.FromImage(buffer))
+                {
+                    savedImage.SmoothingMode = SmoothingMode.AntiAlias;
+                    using (SolidBrush brush = new SolidBrush(style.StrokeColor))
+                    {
+                        for (int i = bufferedPoints; i < ToolPoints.Count; i++)
+                        {
+                            Point p = ToolPoints[i];
+                            savedImage.FillEllipse(brush, p.X - diameter / 2, p.Y - diameter / 2, diameter, diameter);
+                        }
+                    }
+                }
+                bufferedPoints = ToolPoints.Count;
+            }
+
+            graphics.DrawImageUnscaled(buffer, 0, 0);
         }
 
         public override PrimitiveTemplate? Clone()
