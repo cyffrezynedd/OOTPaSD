@@ -43,6 +43,15 @@
             return menu;
         }
 
+        public void TryAddNewMenuItem(ToolStripDropDownButton? menu, ToolStripMenuItem value, EventHandler menuItemEventClick)
+        {
+            if (menu is null)
+                return;
+
+            value.Click += menuItemEventClick;
+            menu.DropDownItems.Add(value);
+        }
+
         public void RemoveFigureMenu(ToolStrip ts, ToolStripMenuItem currentItem, ToolStripDropDownButton? button)
         {
             if (ts == null || currentItem.Tag == null)

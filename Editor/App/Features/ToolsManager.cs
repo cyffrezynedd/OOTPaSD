@@ -117,6 +117,19 @@
             }
         }
 
+        private void UpdateMenu(ToolStripMenuItem value)
+        {
+            generator.TryAddNewMenuItem(FigureMenu, value, FigureMenuItemClick);
+        }
+
+        public void TryAddToFigureMenu(ToolStripMenuItem value)
+        {
+            if (CurrentMenu is not null && CurrentMenu.ContainsKey("Rectangle"))
+            {
+                UpdateMenu(value);
+            }
+        }
+
         private void FigureMenuItemClick(object? sender, EventArgs e)
         {
             if (sender is ToolStripMenuItem item)
